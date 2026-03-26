@@ -1,0 +1,63 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: school-erp
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  jpa:
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  jackson:
+    default-property-inclusion: non_null
+
+  flyway:
+    baseline-on-migrate: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  jwt:
+    access-token-ttl: 8h
+    refresh-token-ttl: 7d
+    issuer: school-erp
+
+  cors:
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - "*"
+    allow-credentials: true
+    max-age: 3600
+
+  rate-limit:
+    enabled: true
+    max-requests: 200
+    window: 1m

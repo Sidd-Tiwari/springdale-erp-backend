@@ -1,0 +1,54 @@
+HELP.md
+
+# Maven / Java build output
+target/
+bin/
+out/
+build/
+
+# Keep nested build folders inside src if ever needed
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+logs/
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# STS / Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

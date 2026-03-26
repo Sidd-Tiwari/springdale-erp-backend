@@ -1,0 +1,3 @@
+-- Optional production seed file.
+-- Local development demo data is primarily inserted by DataSeeder.java
+-- because BCrypt hashes and linked records are easier to manage in Java bootstrap code.

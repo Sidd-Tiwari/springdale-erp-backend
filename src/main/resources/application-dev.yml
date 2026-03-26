@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/school_erp?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  flyway:
+    enabled: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-key-change-me-1234567890}
+
+  cors:
+    allowed-origins:
+      - ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
+
+  bootstrap:
+    seed-demo-data: true
