@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?useSSL=false&allowPublicKeyRetrieval=true
-    username: ${MYSQLUSER}
-    password: ${MYSQLPASSWORD}
+    url: mysql://root:wowfJgQCHtQKYcDPJeyNlapMKUHoNOvb@mysql.railway.internal:3306/railway
+    username: root
+    password: wowfJgQCHtQKYcDPJeyNlapMKUHoNOvb
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
