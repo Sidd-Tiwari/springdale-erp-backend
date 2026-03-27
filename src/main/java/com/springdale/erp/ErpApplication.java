@@ -38,13 +38,13 @@ public class ErpApplication {
                 User user = new User();
                 user.setFullName("Admin User");
                 user.setEmail("admin@school.local");
-                user.setPasswordHash(encoder.encode("Admin@123")); // ✅ correct
-                user.setRole(Role.ADMIN); // ✅ FIXED
+                user.setPasswordHash(encoder.encode("Admin@123")); 
+                user.setRole(Role.ADMIN); 
                 user.setActive(true);
 
                 repo.save(user);
 
-                System.out.println("✅ Admin user created");
+                System.out.println("Admin user created");
             }
         };
     }
