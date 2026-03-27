@@ -4,10 +4,12 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * Strongly typed application configuration mapped from application.yml.
  */
+@Component
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
 
