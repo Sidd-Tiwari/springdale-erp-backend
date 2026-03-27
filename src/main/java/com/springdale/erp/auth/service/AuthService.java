@@ -11,9 +11,11 @@ import com.springdale.erp.security.JwtService;
 import com.springdale.erp.security.UserPrincipal;
 import com.springdale.erp.users.entity.User;
 import com.springdale.erp.users.repo.UserRepository;
+
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,14 +54,22 @@ public class AuthService {
         this.auditLogService = auditLogService;
     }
 
+    // ✅ FIXED LOGIN METHOD
     public LoginResponse login(LoginRequest request) {
         try {
+            // 🔥 Correct authentication token
             Authentication authentication = authenticationManager.authenticate(
-                    UsernamePasswordAuthenticationToken.unauthenticated(request.email(), request.password())
+                    new UsernamePasswordAuthenticationToken(
+                            request.email(),
+                            request.password()
+                    )
             );
 
             UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-            User user = userRepository.findById(principal.getId()).orElseThrow();
+
+            User user = userRepository.findById(principal.getId())
+                    .orElseThrow(() -> new UnauthorizedException("User not found"));
+
             user.setLastLoginAt(Instant.now());
 
             auditLogService.logLoginSuccess(request.email());
@@ -67,8 +77,14 @@ public class AuthService {
             return new LoginResponse(
                     jwtService.generateAccessToken(principal),
                     jwtService.generateRefreshToken(principal),
-                    new LoginResponse.UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole())
+                    new LoginResponse.UserSummary(
+                            user.getId(),
+                            user.getFullName(),
+                            user.getEmail(),
+                            user.getRole()
+                    )
             );
+
         } catch (AuthenticationException ex) {
             auditLogService.logLoginFailure(request.email());
             throw new UnauthorizedException("Invalid email or password");
@@ -77,6 +93,7 @@ public class AuthService {
 
     public LoginResponse refresh(RefreshTokenRequest request) {
         Jwt jwt = jwtService.decode(request.refreshToken());
+
         if (!jwtService.isRefreshToken(jwt)) {
             throw new UnauthorizedException("Invalid refresh token");
         }
@@ -89,29 +106,33 @@ public class AuthService {
         return new LoginResponse(
                 jwtService.generateAccessToken(principal),
                 jwtService.generateRefreshToken(principal),
-                new LoginResponse.UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole())
+                new LoginResponse.UserSummary(
+                        user.getId(),
+                        user.getFullName(),
+                        user.getEmail(),
+                        user.getRole()
+                )
         );
     }
 
     public void changePassword(Long userId, ChangePasswordRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UnauthorizedException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
 
         if (!passwordEncoder.matches(request.currentPassword(), user.getPasswordHash())) {
             throw new UnauthorizedException("Current password is incorrect");
         }
 
         user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+
         auditLogService.logAction(user.getEmail(), "CHANGE_PASSWORD", "USER", userId);
     }
 
-    /**
-     * This endpoint records the reset request and returns a generic response.
-     * In production, integrate this with email/SMS OTP delivery or a notification service.
-     */
     public Map<String, String> forgotPassword(ForgotPasswordRequest request) {
         userRepository.findByEmailIgnoreCase(request.email()).ifPresent(user -> {
             String traceToken = UUID.randomUUID().toString();
             log.info("Password reset requested for email={} traceToken={}", request.email(), traceToken);
+
             auditLogService.logAction(request.email(), "FORGOT_PASSWORD_REQUEST", "USER", user.getId());
         });
 
@@ -120,7 +141,14 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginResponse.UserSummary currentUser(UserPrincipal principal) {
-        User user = userRepository.findById(principal.getId()).orElseThrow();
-        return new LoginResponse.UserSummary(user.getId(), user.getFullName(), user.getEmail(), user.getRole());
+        User user = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+
+        return new LoginResponse.UserSummary(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 }
